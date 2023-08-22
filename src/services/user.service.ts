@@ -31,6 +31,10 @@ export class UserService {
         select: selectFields,
       });
 
+      if (!existingUser) {
+        throw new Error('User not found!');
+      }
+
       return existingUser;
     } catch (error) {
       throw new Error(error);

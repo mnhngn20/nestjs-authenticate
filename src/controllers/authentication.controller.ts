@@ -4,7 +4,7 @@ import { Response } from 'express';
 import { User } from 'src/entities/User.entities';
 import { TokenService } from 'src/services/token.service';
 import { UserService } from 'src/services/user.service';
-import { SignInDto, SignInResponse } from 'src/types/authentication';
+import { LogoutDto, SignInDto, SignInResponse } from 'src/types/authentication';
 import { generateToken } from 'src/utils/token';
 import { verify as verifyJWT } from 'jsonwebtoken';
 
@@ -25,10 +25,6 @@ export class AuthenticationController {
         email,
       });
 
-      if (!existingUser) {
-        return res.status(404).send('User Not Found!');
-      }
-
       const isPasswordMatch = await verify(existingUser.password, password);
       if (!isPasswordMatch) {
         return res.status(400).send('Incorrect Password!');
@@ -46,7 +42,7 @@ export class AuthenticationController {
         user: existingUser,
       });
     } catch (error) {
-      return res.status(500).send(error.message);
+      return res.send(error.message);
     }
   }
 
@@ -108,6 +104,20 @@ export class AuthenticationController {
       throw new Error('Invalid refresh token!');
     } catch (error) {
       return res.send('Invalid refresh token!');
+    }
+  }
+
+  @Post('logout')
+  async logout(
+    @Body() { userId, refreshToken }: LogoutDto,
+    @Res() res: Response,
+  ) {
+    try {
+      await this.tokenService.removeUserRefreshToken(userId, refreshToken);
+
+      res.send('Logout successfully');
+    } catch (error) {
+      res.status(500).send(error.message);
     }
   }
 }

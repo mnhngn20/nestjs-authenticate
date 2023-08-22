@@ -1,5 +1,7 @@
 import { User } from 'src/entities/User.entities';
 
+// Dto
+
 export interface SignUpDto {
   email: string;
   password: string;
@@ -12,6 +14,13 @@ export interface SignInDto {
   address: string;
   age: number;
 }
+
+export interface LogoutDto {
+  refreshToken: string;
+  userId: number;
+}
+
+// Response
 
 export interface SignInResponse {
   user: User;
